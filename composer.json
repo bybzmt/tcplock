@@ -1,5 +1,5 @@
 {
-    "name": "bybzmt/SocketLock",
+    "name": "bybzmt/tcplock",
     "description": "php tcp locker and golang server",
     "keywords": ["socketlock", "locker"],
     "homepage": "http://github.com/bybzmt/tcplock",
