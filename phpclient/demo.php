@@ -1,8 +1,9 @@
-<?php 
+<?php
+namespace bybzmt\SocketLock;
 
-require "SocketLock.php";
+require "Locker.php";
 
-$lock = new SocketLock("lock_key");
+$lock = new Locker("lock_key");
 //配置信息本来应该是类内部从框架配置里读的，这里只是演示。
 $lock->server = "127.0.0.1";
 $lock->port = 7002;

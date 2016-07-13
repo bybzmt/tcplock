@@ -1,15 +1,15 @@
 <?php
+namespace bybzmt\SocketLock;
 
 /**
 * SocketLock 锁
-*
 */
-class SocketLock
+class Locker
 {
 	//服务器相当配置
 	public $server;
 	public $port;
-	public $timeout;
+	public $timeout = 30;
 
 	//锁的key名称
 	private $name;
@@ -35,11 +35,10 @@ class SocketLock
 	*/
 	public function lock()
 	{
-		$fp = fsockopen($this->server, $this->port, $error, $errstr, 12);
+		$fp = fsockopen($this->server, $this->port, $error, $errstr, $this->timeout);
 
 		if (!$fp) {
-			//echo "$errstr ($errno)<br />\n";
-			return false;
+			throw new Exception("SocketLock Errno: {$error} Error: {$errstr}");
 		}
 
 		$len = pack("N", strlen($this->name));
