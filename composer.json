@@ -1,7 +1,7 @@
 {
     "name": "bybzmt/tcplock",
     "description": "php tcp locker and golang server",
-    "keywords": ["socketlock", "locker"],
+    "keywords": ["socketlock", "tcplocker", "locker"],
     "homepage": "http://github.com/bybzmt/tcplock",
     "type": "library",
     "license": "Apache-2.0",

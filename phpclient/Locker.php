@@ -7,27 +7,29 @@ namespace bybzmt\SocketLock;
 class Locker
 {
 	//服务器相当配置
-	public $server;
-	public $port;
-	public $timeout = 30;
+	static public $server;
+	static public $port;
+	static public $timeout = 30;
+
+	private $_server;
+	private $_port;
+	private $_timeout = 30;
 
 	//锁的key名称
-	private $name;
+	private $_key;
 	//文件句柄
-	private $fp;
+	private $_fp;
 
 	/**
 	* 构造函数
-	* @param string $name 锁的名字
+	* @param string $key 锁的名字
 	*/
-	public function __construct($name)
+	public function __construct($key, $server=null, $port=null, $timeout=null)
 	{
-		$this->name = $name;
-
-		//配置信息，应该从框架配置里读取，这里就不写了
-		//$this->server = $aa;
-		//$this->port = $bb;
-		//$this->timeout = $cc;
+		$this->_key = $key;
+		$this->_server = $server ? $server : self::$server;
+		$this->_port = $port ? $port : self::$port;
+		$this->_timeout = $timeout ? $timeout : self::$timeout;
 	}
 
 	/**
@@ -35,14 +37,14 @@ class Locker
 	*/
 	public function lock()
 	{
-		$fp = fsockopen($this->server, $this->port, $error, $errstr, $this->timeout);
+		$fp = fsockopen($this->_server, $this->_port, $error, $errstr, $this->_timeout);
 
 		if (!$fp) {
 			throw new Exception("SocketLock Errno: {$error} Error: {$errstr}");
 		}
 
-		$len = pack("N", strlen($this->name));
-		fwrite($fp, $len.$this->name);
+		$len = pack("N", strlen($this->_key));
+		fwrite($fp, $len.$this->_key);
 		fflush($fp);
 
 		$msg = fread($fp, 2);
@@ -52,7 +54,7 @@ class Locker
 			return false;
 		}
 
-		$this->fp = $fp;
+		$this->_fp = $fp;
 
 		return true;
 	}
@@ -62,10 +64,10 @@ class Locker
 	*/
 	public function unlock()
 	{
-		if ($this->fp)
+		if ($this->_fp)
 		{
-			fclose($this->fp);
-			$this->fp = false;
+			fclose($this->_fp);
+			$this->_fp = false;
 		}
 	}
 
