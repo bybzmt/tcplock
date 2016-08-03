@@ -1,15 +1,15 @@
 package main
 
 import (
+	"encoding/binary"
 	"flag"
+	"io"
 	"log"
 	"net"
-	"time"
-	"sync"
-	"encoding/binary"
 	"runtime"
+	"sync"
 	"sync/atomic"
-	"io"
+	"time"
 )
 
 var port = flag.String("port", ":2000", "socket port")
@@ -52,6 +52,13 @@ func main() {
 }
 
 func handleConnection(conn net.Conn) {
+	defer func() {
+		e := recover()
+		if e != nil {
+			log.Println(e)
+		}
+	}()
+
 	//退出关连接
 	defer conn.Close()
 
@@ -66,11 +73,12 @@ func handleConnection(conn net.Conn) {
 		return
 	}
 
-	if (name_len == 0) {
-		log.Println("name len can't == 0")
+	if name_len < 1 {
+		log.Println("name len can't < 1")
 		return
 	}
-	if (name_len > 256) {
+
+	if name_len > 256 {
 		log.Println("name len too longer")
 		return
 	}
@@ -131,10 +139,10 @@ func handleConnection(conn net.Conn) {
 
 //取得锁，没有时初史化
 func getLock(name string) *sync.Mutex {
-	groups_lock.Lock();
-	defer groups_lock.Unlock();
+	groups_lock.Lock()
+	defer groups_lock.Unlock()
 
-	lock,ok := groups[name]
+	lock, ok := groups[name]
 
 	if !ok {
 		groups[name] = &sync.Mutex{}
@@ -148,8 +156,8 @@ func getLock(name string) *sync.Mutex {
 
 //放回锁，计数器为0时删除锁
 func CloseLock(name string) {
-	groups_lock.Lock();
-	defer groups_lock.Unlock();
+	groups_lock.Lock()
+	defer groups_lock.Unlock()
 
 	counts[name]--
 
@@ -163,9 +171,9 @@ func CloseLock(name string) {
 func status() {
 	c := time.Tick(5 * time.Minute)
 	for _ = range c {
-		groups_lock.Lock();
+		groups_lock.Lock()
 		num := len(groups)
-		groups_lock.Unlock();
+		groups_lock.Unlock()
 
 		log.Println("Crruent Lcoked:", num, "History Locked:", atomic.LoadInt64(&lock_num))
 	}
