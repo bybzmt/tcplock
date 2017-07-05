@@ -9,11 +9,11 @@ class Locker
 	//服务器相当配置
 	static public $server;
 	static public $port;
-	static public $timeout = 30;
+	static public $timeout = 20;
 
 	private $_server;
 	private $_port;
-	private $_timeout = 30;
+	private $_timeout;
 
 	//锁的key名称
 	private $_key;
