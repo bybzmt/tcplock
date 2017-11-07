@@ -1,14 +1,14 @@
 <?php
-namespace bybzmt\SocketLock;
+namespace bybzmt\Locker;
 
 /**
 * SocketLock 锁
 */
-class Locker
+class SocketLock
 {
 	//服务器相当配置
-	static public $server;
-	static public $port;
+	static public $server = '127.0.0.1';
+	static public $port = 2000;
 	static public $timeout = 20;
 
 	private $_server;
